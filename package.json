@@ -1,7 +1,7 @@
 {
   "name": "phantomauth",
   "version": "1.0.0",
-  "description": "PhantomAuth is an open-source invisible authentication service that manages user access and authorization without being visible to end users.",
+  "description": "PhantomAuth is an authentication library that streamlines backend development by offering ready-to-use authentication features, reducing the time needed to build and secure user accounts.",
   "main": "index.js",
   "directories": {
     "test": "tests"
