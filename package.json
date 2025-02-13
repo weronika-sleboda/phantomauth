@@ -1,0 +1,36 @@
+{
+  "name": "phantomauth",
+  "version": "1.0.0",
+  "description": "PhantomAuth is an open-source invisible authentication service that manages user access and authorization without being visible to end users.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e .env.development nodemon index.js",
+    "test": "vitest"
+  },
+  "author": "Weronika Sleboda",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "crypto": "^1.0.1",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "qrcode": "^1.5.4",
+    "rate-limiter-flexible": "^5.0.5",
+    "speakeasy": "^2.0.0",
+    "validator": "^13.12.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "dotenv-cli": "^8.0.0",
+    "nodemon": "^3.1.9",
+    "vitest": "^3.0.5"
+  }
+}
