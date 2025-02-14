@@ -1,18 +1,18 @@
 {
   "name": "phantomauth",
   "version": "1.0.0",
-  "description": "PhantomAuth is an authentication library that streamlines backend development by offering ready-to-use authentication features, reducing the time needed to build and secure user accounts.",
-  "main": "index.js",
+  "description": "An authentication library with built-in security features, designed for fast and boilerplate-free backend development. Ideal for quickly building MVPs with a reasonable level of security. Not intended for high-risk or enterprise level use.",
+  "main": "phantomauth.js",
   "directories": {
     "test": "tests"
   },
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e .env.development nodemon index.js",
+    "dev": "dotenv -e .env.development nodemon index.dev.js",
     "test": "vitest"
   },
   "author": "Weronika Sleboda",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "crypto": "^1.0.1",

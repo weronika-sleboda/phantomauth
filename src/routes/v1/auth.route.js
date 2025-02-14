@@ -5,8 +5,6 @@ import {
   logout,
   resetPassword,
   enable2FA,
-  verify2FA,
-  verifyToken
 } from '../../controllers/v1/auth.controller.js';
 import { rateLimiter } from '../../middlewares/rateLimiter.middleware.js';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
@@ -45,23 +43,6 @@ router.post('/enable-2FA', rateLimiter(
     duration: 60 * 60
   }, RateLimiterMemory)), 
   enable2FA
-);
-
-router.post('/verify-2FA', rateLimiter(
-  createLimiter({
-    points: 5,
-    duration: 10 * 60,
-    blockDuration: 15 * 60
-  }, RateLimiterMemory)), 
-  verify2FA
-);
-
-router.post('/verify-token', rateLimiter(
-  createLimiter({
-    points: 10,
-    duration: 60,
-  }, RateLimiterMemory)), 
-  verifyToken
 );
 
 router.post('/reset-password', rateLimiter(

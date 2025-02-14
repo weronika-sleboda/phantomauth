@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { logger } from "../utils/logger.js";
 
-export const runMongoDB = async () => {
+export const runMongoDB = async (mongoUri) => {
   try {
-    const mongoUri = process.env.MONGO_URI;
     if(!mongoUri) {
       const message = 'MongoDB Uri not found';
       logger.error(message);

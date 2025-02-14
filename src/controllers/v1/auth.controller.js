@@ -9,7 +9,6 @@ import QRCode from 'qrcode';
 import { response } from '../../utils/response.js';
 import jwt from 'jsonwebtoken';
 import { encrypt } from '../../utils/encrypt.js';
-import { decrypt } from '../../utils/decrypt.js';
 
 export const register = async (req, res, next) => {
   const { email, password, bottrap } = req.body;
@@ -85,26 +84,6 @@ export const logout = async (req, res, next) => {
   }
 };
 
-export const verifyToken = async (req, res, next) => {
-  const token = req?.cookies?.token;
-  if(!token)
-    return response('Missing token', 400, res);
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: decoded.userId });
-    const isValid = await bcrypt.compare(token, user.token);
-    if(!user || !isValid)
-      return response('Invalid token', 400, res);
-    req.user = decoded;
-    return response('Verification succeeded', 200, res, true);
-  } catch (err) {
-    if(err.name === 'TokenExpiredError')
-      return response('Expired token', 400, res);
-    logger.error('Token verification failed');
-    next(err)
-  }
-};
-
 export const enable2FA = async (req, res, next) => {
   const { email } = req.body;
   if(!email)
@@ -124,31 +103,6 @@ export const enable2FA = async (req, res, next) => {
     return response(qrCode, 200, res, true);
   } catch (err) {
     logger.error('Enabling 2FA failed');
-    next(err);
-  }
-};
-
-export const verify2FA = async (req, res, next) => {
-  const { email, otp } = req.body;
-  if(!email || !otp)
-    return response('Missing fields', 400, res);
-  try {
-    const user = await User.findOne({ email });
-    if(!user) 
-      return response('Invalid credentials', 400, res);
-    const decrypted = decrypt(user.twoFAsecret);
-    const verified = speakeasy.totp.verify({
-      secret: decrypted,
-      encoding: 'base32',
-      token: otp,
-      window: 1
-    });
-    if(verified)
-      return response('Verification succeeded', 200, res, true);
-    else 
-      return response('Invalid credentials', 400, res);
-  } catch (err) {
-    logger.error('2FA Verification failed');
     next(err);
   }
 };
