@@ -1,0 +1,2 @@
+export const BASE_URL = 'http://localhost:5000';
+export const MONGO_URI = 'mongodb+srv://weronikasleboda:QY6ejacyRRZFoKi1@app-core.3g5ph.mongodb.net/phantomauth?retryWrites=true&w=majority&appName=app-core';

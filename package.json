@@ -8,13 +8,14 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "dotenv -e .env.development nodemon index.dev.js",
+    "dev": "nodemon index.dev.js",
     "test": "vitest"
   },
   "author": "Weronika Sleboda",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "crypto": "^1.0.1",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",

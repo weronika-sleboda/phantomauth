@@ -6,6 +6,7 @@ import { errorHandler } from '../middlewares/errorHandler.middleware.js';
 import helmet from 'helmet';
 import { verifyToken } from '../middlewares/verifyToken.middleware.js';
 import { verify2FA } from '../middlewares/verify2FA.middleware.js';
+import mongoose from 'mongoose';
 
 export const phantomauth = async (mongoUri, apiUrl) => {
   try {
@@ -19,6 +20,7 @@ export const phantomauth = async (mongoUri, apiUrl) => {
     return { app, verifyToken, verify2FA }
   } catch (err) {
     logger.error(`Phantom Auth stopped: ${err.message}`);
+    mongoose.connection.close();
     process.exit(1);
   }
 };

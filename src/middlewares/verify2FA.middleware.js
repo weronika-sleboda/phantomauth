@@ -1,6 +1,7 @@
 import { User } from '../models/v1/users.model.js';
 import { decrypt } from 'dotenv';
 import speakeasy from 'speakeasy';
+import { response } from '../utils/response.js';
 
 export const verify2FA = async (req, res, next) => {
   const { email, otp } = req.body;
@@ -21,7 +22,6 @@ export const verify2FA = async (req, res, next) => {
       return response('Verification failed', 400, res);
     next();
   } catch (err) {
-    logger.error('2FA Verification failed');
-    next(err);
+    return response('2FA Verification failed', 400, res);
   }
 };

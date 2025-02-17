@@ -5,6 +5,7 @@ import { logger } from './src/utils/logger.js';
 import { runMongoDB } from './src/db/runMongoDB.js';
 import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ const startServer = async () => {
     const app = express();
     app.use(helmet());
     app.use(express.json());
-    app.use(`${API_URL}`, authRouter);
+    app.use(cookieParser());
+    app.use(API_URL, authRouter);
     app.use(errorHandler);
     app.listen(PORT, () => {
       logger.info(`PhantomAuth runs at ${BASE_URL}`);

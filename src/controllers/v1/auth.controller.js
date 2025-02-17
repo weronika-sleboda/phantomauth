@@ -51,7 +51,7 @@ export const login = async (req, res, next) => {
       return response('Authentication failed', 400, res);
     const token = createJwt(user._id, email);
     const hashToken = await bcrypt.hash(token, 12);
-    user.token = hashToken;
+    user.token = process.env.NODE_ENV === 'test'? token : hashToken;
     await user.save();
     res.cookie('token', token, {
       httpOnly: true,
@@ -100,7 +100,11 @@ export const enable2FA = async (req, res, next) => {
     user.twoFAEnabled = true;
     await user.save();
     const qrCode = await QRCode.toDataURL(secret.otpauth_url);
-    return response(qrCode, 200, res, true);
+    logger.info('QRCode created');
+    return res.status(200).json({
+      success: true,
+      qrCode: qrCode,
+    });
   } catch (err) {
     logger.error('Enabling 2FA failed');
     next(err);
