@@ -17,7 +17,7 @@ export const verifyToken = async (req, res, next) => {
       : await bcrypt.compare(token, user.token);
     if (!isValid) 
       return response('Invalid token', 400, res);
-    req.user = decoded;
+    req.userId = decoded.userId;
     next();
   } catch (err) {
     if(err.name === 'TokenExpiredError')

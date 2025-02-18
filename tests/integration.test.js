@@ -14,6 +14,8 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import dotenv from 'dotenv';
 import { verify2FA } from "../src/middlewares/verify2FA.middleware.js";
+import speakeasy from 'speakeasy';
+import { decryptSec } from "../src/utils/decryptSec.js";
 
 dotenv.config();
 
@@ -81,7 +83,6 @@ describe('Auth Router - Login & Rate Limiting', () => {
     let response;
     for(let i = 0; i < REQ_LIMIT; i++) {
       response = await fetch(BASE_URL + route, mainOpts);
-      console.log(response.message);
       expect(response.status).toBe(200);
     }
     response = await fetch(BASE_URL + route, mainOpts);
@@ -97,7 +98,7 @@ describe('Token Verification - Valid Token', () => {
     const user = await User.findOne({ email: EMAIL });
     token = user.token;
     app.post(route, verifyToken, (req, res, next) => {
-      return res.status(200).json({ user: req.user });
+      return res.status(200).json({ userId: req.userId });
     });
     app.use(errorHandler);
     server = app.listen(5000);
@@ -112,9 +113,9 @@ describe('Token Verification - Valid Token', () => {
       credentials: 'include',
       headers: { Cookie: `token=${token}`}
     });
-    const { user } = await response.json();
+    const { userId } = await response.json();
     expect(response.status).toBe(200);
-    expect(user).toBeDefined();
+    expect(userId).toBeDefined();
   });
 });
 
@@ -157,7 +158,7 @@ describe('Token Verification - Invalid Token', () => {
     const user = await User.findOne({ email: EMAIL });
     token = user.token;
     app.post(route, verifyToken, (req, res, next) => {
-      return res.status(200).json({ user: req.user });
+      return res.status(200).json({ userId: req.userId });
     });
     app.use(errorHandler);
     server = app.listen(5000);
@@ -172,9 +173,9 @@ describe('Token Verification - Invalid Token', () => {
       credentials: 'include',
       headers: { Cookie: `token=${token}`}
     });
-    const { user } = await response.json();
+    const { userId } = await response.json();
     expect(response.status).toBe(400);
-    expect(user).toBeUndefined();
+    expect(userId).toBeUndefined();
   });
 });
 
@@ -194,7 +195,7 @@ describe('Auth Router - Enable 2FA', () => {
     await mongoose.connection.close();
     await server.close();
   });
-  it('should return code 200 and a QR code on 2FA enable', async () => {
+  it('should return 200 and a QR code on 2FA enable', async () => {
     const response = await fetch(BASE_URL + route, { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -203,6 +204,48 @@ describe('Auth Router - Enable 2FA', () => {
     const { qrCode } = await response.json();
     expect(response.status).toBe(200);
     expect(qrCode).toBeDefined();
+  });
+});
+
+describe('Verification - 2FA Valid OTP', () => {
+  const route = '/protected-2';
+  let secret; 
+  beforeAll(async () => {
+    await runMongoDB(MONGO_URI);
+    const user = await User.findOne({ email: EMAIL });
+    const decrypted = decryptSec(user.twoFAsecret);
+    secret = decrypted;
+    app.post(route, verify2FA, (req, res, next) => {
+      return res.status(200).json({ userId: req.userId });
+    });
+    app.use(errorHandler);
+    server = app.listen(5000);
+  });
+  afterAll(async () => {
+    await mongoose.connection.close();
+    await server.close();
+  });
+  it('should return 200 and user data when accessing a protected route with a valid OTP.', async () => {
+    const otp = speakeasy.totp({ 
+      secret: secret, 
+      encoding: 'base32'
+    });
+    const validRes = await fetch(BASE_URL + route, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: EMAIL, otp: otp })
+    });
+    const valdiData = await validRes.json();
+    expect(validRes.status).toBe(200);
+    expect(valdiData.userId).toBeDefined();
+    const invalidRes = await fetch(BASE_URL + route, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: EMAIL, otp: '123456' })
+    });
+    const invaldiData = await invalidRes.json();
+    expect(invalidRes.status).toBe(400);
+    expect(invaldiData.userId).toBeUndefined();
   });
 });
 

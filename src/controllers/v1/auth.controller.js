@@ -8,7 +8,7 @@ import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import { response } from '../../utils/response.js';
 import jwt from 'jsonwebtoken';
-import { encrypt } from '../../utils/encrypt.js';
+import { encryptSec } from '../../utils/encryptSec.js';
 
 export const register = async (req, res, next) => {
   const { email, password, bottrap } = req.body;
@@ -95,7 +95,7 @@ export const enable2FA = async (req, res, next) => {
     const secret = speakeasy.generateSecret({ 
       name: `PhantomGate Auth: ${email}`}
     );
-    const encrypted = encrypt(secret.base32);
+    const encrypted = encryptSec(secret.base32);
     user.twoFAsecret = encrypted;
     user.twoFAEnabled = true;
     await user.save();
