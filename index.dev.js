@@ -6,6 +6,7 @@ import { runMongoDB } from './src/db/runMongoDB.js';
 import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import { verifyToken } from './src/middlewares/verifyToken.middleware.js';
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ const startServer = async () => {
     app.use(express.json());
     app.use(cookieParser());
     app.use(API_URL, authRouter);
-    app.use(API_URL + '/protected', (req, res) => {
+    app.use(API_URL + '/protected', verifyToken, (req, res) => {
       return res.status(200).json({
         success: true,
         message: 'User verified'
