@@ -22,6 +22,12 @@ const startServer = async () => {
     app.use(express.json());
     app.use(cookieParser());
     app.use(API_URL, authRouter);
+    app.use(API_URL + '/protected', (req, res) => {
+      return res.status(200).json({
+        success: true,
+        message: 'User verified'
+      })
+    });
     app.use(errorHandler);
     app.listen(PORT, () => {
       logger.info(`PhantomAuth runs at ${BASE_URL}`);
