@@ -7,6 +7,7 @@ import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { verifyToken } from './src/middlewares/verifyToken.middleware.js';
+import { verify2FA } from './src/middlewares/verify2FA.middleware.js';
 
 dotenv.config();
 
@@ -23,10 +24,16 @@ const startServer = async () => {
     app.use(express.json());
     app.use(cookieParser());
     app.use(API_URL, authRouter);
-    app.use(API_URL + '/protected', verifyToken, (req, res) => {
+    app.use(API_URL + '/protected-1', verifyToken, (req, res) => {
       return res.status(200).json({
         success: true,
-        message: 'User verified'
+        message: 'Token verified'
+      })
+    });
+    app.use(API_URL + '/protected-2', verify2FA, (req, res) => {
+      return res.status(200).json({
+        success: true,
+        message: '2FA verified'
       })
     });
     app.use(errorHandler);
