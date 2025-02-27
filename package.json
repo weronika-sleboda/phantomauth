@@ -1,6 +1,6 @@
 {
   "name": "phantomauth",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An authentication library with built-in security features, designed for fast and boilerplate-free backend development. Ideal for quickly building MVPs with a reasonable level of security. Not intended for high-risk or enterprise level use.",
   "main": "phantomauth.js",
   "directories": {
